@@ -48,7 +48,10 @@ test:
 #     url: <%= ENV['DATABASE_URL'] %>
 #
 production:
-  <<: *default
+  #<<: *default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
   database: tweettask_production
   username: tweettask
   password: <%= ENV['TWEETTASK_DATABASE_PASSWORD'] %>
