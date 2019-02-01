@@ -1,5 +1,6 @@
 class TasksController < ApplicationController
   before_action :set_task, only: [:show, :edit, :update, :destroy]
+  before_action :twitter_client, only: [:create]
   
   def index
     @tasks = Task.all.page(params[:page]).per(5)
@@ -16,6 +17,7 @@ class TasksController < ApplicationController
   def create
     @task = Task.new(task_params)
     if @task.save
+       @client.update("#{@task.content}\r")
       flash[:success] = 'task が正常に投稿されました'
       redirect_to @task
     else
@@ -54,5 +56,14 @@ class TasksController < ApplicationController
 
   def task_params
     params.require(:task).permit(:content)
+  end
+  
+  def twitter_client
+    @client = Twitter::REST::Client.new do |config|
+      config.consumer_key = ENV['TWITTER_API_ID']
+      config.consumer_secret = ENV['TWITTER_API_SECRET_ID']
+      config.access_token = ENV['TWITTER_ACCESS_TOKEN_ID']
+      config.access_token_secret = ENV['TWITTER_ACCESS_TOKEN_SECRET_ID']
+    end
   end
 end
